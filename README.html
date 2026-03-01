@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Jumia Laptop Scraper</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#f5f0e8; --ink:#0f0e0b; --orange:#e84b1a; --orange2:#ff8c42;
+  --cream:#faf7f0; --muted:#6b6457; --surface:#fff;
+  --code-bg:#0f0e0b; --code-text:#f5f0e8;
+}
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--ink); font-family:'DM Sans',sans-serif; line-height:1.6; overflow-x:hidden; }
+body::before {
+  content:''; position:fixed; inset:0;
+  background-image: linear-gradient(rgba(15,14,11,0.04) 1px,transparent 1px), linear-gradient(90deg,rgba(15,14,11,0.04) 1px,transparent 1px);
+  background-size:40px 40px; pointer-events:none; z-index:0;
+}
+.topbar {
+  position:sticky; top:0; z-index:100; background:var(--ink); color:var(--bg);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0.6rem 6vw; font-family:'DM Mono',monospace; font-size:0.65rem;
+  letter-spacing:0.15em; text-transform:uppercase;
+}
+.topbar-right { display:flex; gap:2rem; }
+.topbar span { color:var(--orange2); }
+.hero {
+  position:relative; z-index:1; padding:5vw 6vw 4vw;
+  border-bottom:3px solid var(--ink);
+  display:grid; grid-template-columns:1fr auto; gap:2rem; align-items:end; overflow:hidden;
+}
+.hero-bg-text {
+  position:absolute; bottom:-0.15em; left:-0.02em;
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(8rem,20vw,22rem);
+  color:rgba(15,14,11,0.04); line-height:1; pointer-events:none; white-space:nowrap; user-select:none;
+}
+.hero-left { position:relative; }
+.hero-tag {
+  display:inline-flex; align-items:center; gap:0.5rem;
+  background:var(--orange); color:white; padding:0.3rem 0.8rem;
+  font-family:'DM Mono',monospace; font-size:0.65rem;
+  letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1.5rem;
+}
+.hero h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(4rem,11vw,10rem); line-height:0.9; letter-spacing:0.01em; margin-bottom:1.5rem; }
+.hero h1 .l2 { color:var(--orange); }
+.hero h1 .l3 { -webkit-text-stroke:2px var(--ink); color:transparent; }
+.hero-desc { font-size:1rem; color:var(--muted); max-width:480px; line-height:1.7; font-weight:300; }
+.hero-right { display:flex; flex-direction:column; align-items:flex-end; gap:1rem; padding-bottom:1rem; }
+.stat-box {
+  border:2px solid var(--ink); padding:1.25rem 1.5rem; text-align:right;
+  background:var(--cream); position:relative; min-width:160px;
+  opacity:0; animation:slideIn 0.5s ease both;
+}
+.stat-box:nth-child(1){animation-delay:0.1s}
+.stat-box:nth-child(2){animation-delay:0.25s}
+.stat-box:nth-child(3){animation-delay:0.4s}
+.stat-box::after {
+  content:''; position:absolute; bottom:-5px; right:-5px;
+  width:100%; height:100%; background:var(--ink); z-index:-1;
+}
+.stat-num { font-family:'Bebas Neue',sans-serif; font-size:2.8rem; line-height:1; color:var(--orange); }
+.stat-label { font-family:'DM Mono',monospace; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-top:0.2rem; }
+.section { position:relative; z-index:1; padding:4rem 6vw; border-bottom:1.5px solid var(--ink); }
+.sec-header { display:flex; align-items:baseline; gap:1rem; margin-bottom:2.5rem; border-bottom:1.5px solid var(--ink); padding-bottom:1rem; }
+.sec-num { font-family:'DM Mono',monospace; font-size:0.65rem; letter-spacing:0.2em; color:var(--orange); flex-shrink:0; }
+.sec-header h2 { font-family:'Bebas Neue',sans-serif; font-size:clamp(2rem,5vw,3.5rem); letter-spacing:0.03em; line-height:1; }
+.feat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:0; border:1.5px solid var(--ink); }
+.feat-card { padding:2rem; border-right:1.5px solid var(--ink); border-bottom:1.5px solid var(--ink); background:var(--cream); transition:background 0.2s; }
+.feat-card:hover { background:var(--orange); }
+.feat-card:hover .feat-icon, .feat-card:hover h3, .feat-card:hover p { color:white; }
+.feat-icon { font-size:1.5rem; margin-bottom:1rem; display:block; }
+.feat-card h3 { font-family:'DM Mono',monospace; font-size:0.8rem; font-weight:500; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:0.5rem; }
+.feat-card p { font-size:0.82rem; color:var(--muted); line-height:1.6; font-weight:300; }
+.code-wrap { background:var(--code-bg); border:2px solid var(--ink); }
+.code-titlebar { display:flex; align-items:center; justify-content:space-between; padding:0.6rem 1.25rem; border-bottom:1px solid rgba(245,240,232,0.1); }
+.code-dots { display:flex; gap:6px; }
+.code-dots span { width:10px; height:10px; border-radius:50%; }
+.dot-r{background:#ff5f57} .dot-y{background:#febc2e} .dot-g{background:#28c840}
+.code-filename { font-family:'DM Mono',monospace; font-size:0.65rem; color:rgba(245,240,232,0.4); letter-spacing:0.1em; }
+pre { padding:1.5rem; font-family:'DM Mono',monospace; font-size:0.78rem; line-height:1.9; color:var(--code-text); overflow-x:auto; white-space:pre; }
+.kw{color:#ff8c42} .st{color:#a8e6a3} .cm{color:#5a5a4a;font-style:italic} .fn{color:#7ec8e3} .num{color:#ffd166} .cl{color:#ff8fab}
+.json-preview { display:grid; grid-template-columns:1fr 1fr; gap:1.5px; background:var(--ink); border:1.5px solid var(--ink); }
+.json-pane { background:var(--code-bg); padding:1.5rem; font-family:'DM Mono',monospace; font-size:0.72rem; line-height:1.9; color:#a8b0bb; overflow-x:auto; }
+.json-pane h4 { font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--orange2); margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid rgba(255,255,255,0.08); }
+.j-key{color:#7ec8e3} .j-str{color:#a8e6a3} .j-num{color:#ffd166}
+.steps { display:flex; flex-direction:column; }
+.step { display:grid; grid-template-columns:80px 1fr; border:1.5px solid var(--ink); margin-bottom:-1.5px; background:var(--cream); transition:background 0.15s; }
+.step:hover { background:var(--surface); }
+.step-num { font-family:'Bebas Neue',sans-serif; font-size:3rem; color:var(--orange); display:flex; align-items:center; justify-content:center; border-right:1.5px solid var(--ink); padding:1.25rem; line-height:1; }
+.step-body { padding:1.25rem 1.5rem; }
+.step-body h3 { font-family:'DM Mono',monospace; font-size:0.75rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.4rem; color:var(--orange); }
+.step-body p { font-size:0.85rem; color:var(--muted); font-weight:300; line-height:1.6; }
+.cmd-line { margin-top:0.6rem; background:var(--code-bg); color:var(--orange2); font-family:'DM Mono',monospace; font-size:0.72rem; padding:0.4rem 0.75rem; display:inline-flex; align-items:center; gap:0.5rem; }
+.cmd-line::before { content:'$'; color:#5a5a4a; }
+.flags-table { width:100%; border-collapse:collapse; font-family:'DM Mono',monospace; }
+.flags-table th { text-align:left; padding:0.75rem 1rem; background:var(--ink); color:var(--bg); font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; }
+.flags-table td { padding:0.75rem 1rem; border-bottom:1px solid var(--ink); font-size:0.75rem; background:var(--cream); vertical-align:top; }
+.flags-table tr:hover td { background:var(--surface); }
+.flag{color:var(--orange);font-weight:500} .def{color:var(--muted);font-style:italic}
+footer { position:relative; z-index:1; background:var(--ink); color:var(--bg); padding:3rem 6vw; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.5rem; }
+.footer-logo { font-family:'Bebas Neue',sans-serif; font-size:2.5rem; letter-spacing:0.05em; line-height:1; }
+.footer-logo span{color:var(--orange)}
+.footer-meta { font-family:'DM Mono',monospace; font-size:0.65rem; line-height:2; color:rgba(245,240,232,0.4); text-transform:uppercase; letter-spacing:0.1em; text-align:right; }
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s,transform 0.6s}
+.reveal.visible{opacity:1;transform:none}
+@media(max-width:768px){
+  .hero{grid-template-columns:1fr}
+  .hero-right{flex-direction:row;flex-wrap:wrap;align-items:flex-start}
+  .json-preview{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>🕷 Jumia Scraper</span>
+  <div class="topbar-right">
+    <span>Python 3.8+</span><span>Selenium</span><span>Nigeria 🇳🇬</span>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="hero-bg-text">JUMIA</div>
+  <div class="hero-left">
+    <div class="hero-tag">🛒 E-Commerce · Selenium WebDriver</div>
+    <h1>
+      <div>SCRAPE</div>
+      <div class="l2">JUMIA</div>
+      <div class="l3">LAPTOPS</div>
+    </h1>
+    <p class="hero-desc">A full-featured Selenium scraper for Jumia Nigeria's electronics catalogue. Searches, scrolls, dismisses popups, paginates, and exports clean structured JSON — automatically.</p>
+  </div>
+  <div class="hero-right">
+    <div class="stat-box"><div class="stat-num">40+</div><div class="stat-label">Products / page</div></div>
+    <div class="stat-box"><div class="stat-num">10</div><div class="stat-label">Default pages</div></div>
+    <div class="stat-box"><div class="stat-num">8</div><div class="stat-label">Fields extracted</div></div>
+  </div>
+</section>
+
+<section class="section reveal">
+  <div class="sec-header"><span class="sec-num">01 —</span><h2>What It Does</h2></div>
+  <div class="feat-grid">
+    <div class="feat-card"><span class="feat-icon">🔍</span><h3>Form Search</h3><p>Types your query into Jumia's search bar and hits Enter — exactly like a real user browsing the site.</p></div>
+    <div class="feat-card"><span class="feat-icon">🍪</span><h3>Popup Handler</h3><p>Auto-dismisses cookie banners, newsletter modals, and app-install prompts that would block scraping.</p></div>
+    <div class="feat-card"><span class="feat-icon">📜</span><h3>Lazy Scroll</h3><p>Scrolls incrementally down each page to trigger lazy-loaded product images and dynamically injected cards.</p></div>
+    <div class="feat-card"><span class="feat-icon">📄</span><h3>Pagination</h3><p>Automatically clicks "Next Page" and scrapes every result page up to your configured limit.</p></div>
+    <div class="feat-card"><span class="feat-icon">💰</span><h3>Price & Discount</h3><p>Captures current price, original (crossed-out) price, and the discount percentage label per product.</p></div>
+    <div class="feat-card"><span class="feat-icon">⭐</span><h3>Ratings & Reviews</h3><p>Extracts star rating and total number of customer reviews for each product listing.</p></div>
+    <div class="feat-card"><span class="feat-icon">🏷️</span><h3>Trust Badges</h3><p>Detects Jumia Express, Official Store, and other seller trust badges displayed on listings.</p></div>
+    <div class="feat-card" style="border-right:none"><span class="feat-icon">📦</span><h3>JSON Output</h3><p>Saves results with a full metadata block: query, timestamp, pages scraped, and total product count.</p></div>
+  </div>
+</section>
+
+<section class="section reveal">
+  <div class="sec-header"><span class="sec-num">02 —</span><h2>Key Code</h2></div>
+  <div class="code-wrap">
+    <div class="code-titlebar">
+      <div class="code-dots"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span></div>
+      <span class="code-filename">jumia_scraper.py — core loop</span>
+    </div>
+<pre><span class="cm"># For each page: scroll → extract → paginate</span>
+<span class="kw">while</span> page &lt;= max_pages:
+    <span class="fn">scroll_page</span>(driver)          <span class="cm"># trigger lazy-loaded cards</span>
+    <span class="fn">dismiss_popups</span>(driver)       <span class="cm"># in case one appeared mid-scroll</span>
+
+    products = <span class="fn">parse_products</span>(driver)
+    all_products.<span class="fn">extend</span>(products)
+    <span class="fn">print</span>(<span class="st">f"   Page {page}: {len(products)} products"</span>)
+
+    <span class="kw">if not</span> <span class="fn">go_to_next_page</span>(driver):
+        <span class="kw">break</span>              <span class="cm"># no more pages</span>
+    page += <span class="num">1</span>
+
+<span class="cm"># Popup dismissal tries multiple selectors</span>
+<span class="kw">def</span> <span class="fn">dismiss_popups</span>(driver):
+    selectors = [<span class="st">"button[data-testid='cookies-accept']"</span>,
+                 <span class="st">".-close"</span>, <span class="st">".-dismiss"</span>, <span class="st">".modal-close"</span>]
+    <span class="kw">for</span> sel <span class="kw">in</span> selectors:
+        <span class="kw">try</span>:
+            WebDriverWait(driver,<span class="num">2</span>).<span class="fn">until</span>(
+                EC.<span class="fn">element_to_be_clickable</span>((By.CSS_SELECTOR, sel))
+            ).<span class="fn">click</span>()
+        <span class="kw">except</span>: <span class="kw">pass</span>   <span class="cm"># not present — move on</span>
+
+<span class="cm"># Each product card parsed safely (no crash on missing fields)</span>
+<span class="kw">def</span> <span class="fn">safe_text</span>(card, selector, attr=<span class="cl">None</span>):
+    <span class="kw">try</span>:
+        el = card.<span class="fn">find_element</span>(By.CSS_SELECTOR, selector)
+        <span class="kw">return</span> el.<span class="fn">get_attribute</span>(attr) <span class="kw">if</span> attr <span class="kw">else</span> el.text.<span class="fn">strip</span>()
+    <span class="kw">except</span> NoSuchElementException:
+        <span class="kw">return None</span></pre>
+  </div>
+</section>
+
+<section class="section reveal">
+  <div class="sec-header"><span class="sec-num">03 —</span><h2>Output Format</h2></div>
+  <div class="json-preview">
+    <div class="json-pane">
+      <h4>Meta block</h4>
+<pre><span class="j-key">"meta"</span>: {
+  <span class="j-key">"query"</span>:          <span class="j-str">"laptops"</span>,
+  <span class="j-key">"site"</span>:           <span class="j-str">"https://www.jumia.com.ng"</span>,
+  <span class="j-key">"category"</span>:       <span class="j-str">"Electronics / Laptops"</span>,
+  <span class="j-key">"pages_scraped"</span>:  <span class="j-num">5</span>,
+  <span class="j-key">"total_products"</span>: <span class="j-num">198</span>,
+  <span class="j-key">"scraped_at"</span>:     <span class="j-str">"2026-03-01T14:22:05"</span>
+}</pre>
+    </div>
+    <div class="json-pane">
+      <h4>Product record</h4>
+<pre><span class="j-key">"products"</span>: [{
+  <span class="j-key">"title"</span>:     <span class="j-str">"HP 15 Core i5 8GB/512GB SSD"</span>,
+  <span class="j-key">"price"</span>:     <span class="j-str">"₦ 485,000"</span>,
+  <span class="j-key">"old_price"</span>: <span class="j-str">"₦ 620,000"</span>,
+  <span class="j-key">"discount"</span>:  <span class="j-str">"-22%"</span>,
+  <span class="j-key">"rating"</span>:    <span class="j-str">"4"</span>,
+  <span class="j-key">"reviews"</span>:   <span class="j-str">"312"</span>,
+  <span class="j-key">"badge"</span>:     <span class="j-str">"Jumia Express"</span>,
+  <span class="j-key">"url"</span>:       <span class="j-str">"https://www.jumia.com.ng/..."</span>
+}]</pre>
+    </div>
+  </div>
+</section>
+
+<section class="section reveal">
+  <div class="sec-header"><span class="sec-num">04 —</span><h2>Get Started</h2></div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Install dependencies</h3>
+        <p>webdriver-manager handles ChromeDriver automatically — no manual downloads needed.</p>
+        <div class="cmd-line">pip install selenium webdriver-manager</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Run with defaults</h3>
+        <p>Searches "laptops" across up to 10 pages in silent headless mode.</p>
+        <div class="cmd-line">python jumia_scraper.py</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Custom query & page limit</h3>
+        <p>Search any product. Use --visible to watch Chrome work in real time — great for debugging.</p>
+        <div class="cmd-line">python jumia_scraper.py --query "gaming laptop" --pages 3</div>
+        <div class="cmd-line">python jumia_scraper.py --query "dell laptop" --visible</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>Configure multi-query runs</h3>
+        <p>Edit config.py to set multiple search terms, filters (min rating, max price), and output settings.</p>
+        <div class="cmd-line">nano config.py</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h3>Read your results</h3>
+        <p>Output lands in data/jumia_laptops.json — open in any JSON viewer or load in Python.</p>
+        <div class="cmd-line">python -c "import json; d=json.load(open('data/jumia_laptops.json')); print(d['meta'])"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section reveal">
+  <div class="sec-header"><span class="sec-num">05 —</span><h2>CLI Flags</h2></div>
+  <table class="flags-table">
+    <thead>
+      <tr><th>Flag</th><th>Type</th><th>Default</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="flag">--query</td><td>string</td><td class="def">"laptops"</td><td>Product search term passed to Jumia's search bar</td></tr>
+      <tr><td class="flag">--pages</td><td>int</td><td class="def">10</td><td>Maximum number of result pages to scrape (40 products each)</td></tr>
+      <tr><td class="flag">--visible</td><td>flag</td><td class="def">off</td><td>Show the Chrome browser window instead of running headless</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  <div class="footer-logo">JUMIA<br/><span>SCRAPER</span></div>
+  <div class="footer-meta">
+    Python 3.8+ · Selenium WebDriver<br/>
+    Target: jumia.com.ng · Nigeria 🇳🇬<br/>
+    Output: JSON · MIT License
+  </div>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver(
+    entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }),
+    { threshold: 0.08 }
+  );
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
