@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "queries": [
+      "laptops"
+    ],
+    "site": "https://www.jumia.com.ng",
+    "category": "Electronics / Laptops",
+    "pages_per_query": 10,
+    "total_products": 4,
+    "scraped_at": "2026-03-01T02:15:32.138813",
+    "filters": {
+      "min_rating": null,
+      "min_reviews": null,
+      "max_price_ngn": null,
+      "only_discounted": false
+    }
+  },
+  "products": [
+    {
+      "title": "Hp EliteBook 840 G6 Intel Core I5-8GB RAM-256GB SSD-Backlit Keyboard 11 Pro+BAG",
+      "price": "₦ 420,000",
+      "old_price": "₦ 630,000",
+      "discount": "33%",
+      "rating": null,
+      "reviews": null,
+      "badge": null,
+      "url": "https://www.jumia.com.ng/hp-elitebook-840-g6-intel-core-i5-8gb-ram-256gb-ssd-backlit-keyboard-11-probag-366691733.html"
+    },
+    {
+      "title": "DELL Latitude 7490 Intel Core I5- 8GB RAM/256GB SSD BACKLIGHT KEYBOARD/WIN 11 PRO+BAG",
+      "price": "₦ 350,000",
+      "old_price": "₦ 560,000",
+      "discount": "38%",
+      "rating": null,
+      "reviews": null,
+      "badge": null,
+      "url": "https://www.jumia.com.ng/dell-latitude-7490-intel-core-i5-8gb-ram256gb-ssd-backlight-keyboardwin-11-probag-369719864.html"
+    },
+    {
+      "title": "DELL Latitude 7490 Intel Core I5 TOUCHSCREEN - 256GB SSD/16GB RAM BACKLIGHT KEYBOARD/WIN 11PRO+BAG",
+      "price": "₦ 410,000",
+      "old_price": "₦ 700,000",
+      "discount": "41%",
+      "rating": null,
+      "reviews": null,
+      "badge": null,
+      "url": "https://www.jumia.com.ng/latitude-5300-touchscreen-intel-core-i5512gb-ssd-16gb-rambacklight-keyboard-win-11probag-dell-mpg11004160.html"
+    },
+    {
+      "title": "DELL Latitude 7490 Intel Core I5- 16GB RAM/512GB SSD /TOUCHSCREEN/BACKLIGHT KEYBOARD/WIN 11 PRO+BAG",
+      "price": "₦ 445,000",
+      "old_price": "₦ 670,000",
+      "discount": "34%",
+      "rating": null,
+      "reviews": null,
+      "badge": null,
+      "url": "https://www.jumia.com.ng/latitude-7490-intel-core-i5-16gb-ram512gb-ssd-touchscreenbacklight-keyboardwin-11-probag-dell-mpg11503993.html"
+    }
+  ]
+}
